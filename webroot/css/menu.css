@@ -86,12 +86,11 @@
 
 .menu {
 	color: #525252;
-	background: #B1083D;
 }
 
 .menu ul li a {
 	color: #B1083D;
-	background-color: #FBE9E6;
+	background-color: #fff;
 }
 
 .menu ul {
@@ -100,7 +99,7 @@
 
 .menu a {
 	text-decoration: none;
-	color: #F0E5E5;
+	color: #fff;
 	padding: .4em 1em;
 	display: block;
 	position: relative;
@@ -108,7 +107,7 @@
 
 .menu a:hover, .menu li:hover>a {
 	color: #B1083D;
-	background-color: #FBE9E6;
+	background-color: #fff;
 }
 
 .menu li li {	/* create borders around each item */
@@ -126,11 +125,11 @@
 /* special colouring for "Main menu:", and for "xx submenu" items in ADxMenu
 	placed here to clarify the terminology I use when referencing submenus in posts */
 .menu>li:first-child>a:hover {
-	background-color: #FBE9E6;
+	background-color: #fff;
 }
 .menu li + li + li li:first-child>a:hover {
 	/*color: #EEEEEE;*/
-	background-color: #FBE9E6;
+	background-color: #fff;
 }
 
 /* Fix for IE5/Mac \*//*/

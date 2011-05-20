@@ -140,10 +140,10 @@ class MenuComponent extends Object
 			
 		foreach($items as $k => $item)
 		{
-			if($this->checkMenuNode($items))
+			if($this->checkMenuNode($item))
 			{
-				if(isset($items['childs']))
-					$items['childs'] = $this->deepCheck($items['childs']);
+				if(isset($item['childs']))
+					$item['childs'] = $this->deepCheck($item['childs']);
 			}
 			else
 				unset($items[$k]);

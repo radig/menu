@@ -160,7 +160,7 @@
 	-webkit-border-radius: 5px;
 	padding: 3px;
 }
-
+#configMenu li:last-child { border-bottom: none;}
 #configMenu li {
 	width:150px;
 	background-color: #fff;

@@ -142,7 +142,7 @@ class MenuComponent extends Object
 		{
 			if($this->checkMenuNode($item))
 			{
-				if(isset($item['childs']))
+				if(isset($item['childs']) && !empty($item['childs']))
 					$item['childs'] = $this->deepCheck($item['childs']);
 			}
 			else

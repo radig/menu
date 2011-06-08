@@ -159,6 +159,7 @@
 	-moz-box-shadow:1px 1px 9px #ddd; 
 	-webkit-border-radius: 5px;
 	padding: 3px;
+	z-index: 1;
 }
 #configMenu li:last-child { border-bottom: none;}
 #configMenu li {

@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 
-.menu 
+.menu
 {
 	margin: 0px auto;
 	font-size: 0.89em;
@@ -156,10 +156,10 @@
 	border: 2px solid #999;
 	border-radius: 4px;
 	box-shadow: 1px 1px 9px #ddd;
-	-moz-box-shadow:1px 1px 9px #ddd; 
+	-moz-box-shadow:1px 1px 9px #ddd;
 	-webkit-border-radius: 5px;
 	padding: 3px;
-	z-index: 1;
+	z-index: 100;
 }
 #configMenu li:last-child { border-bottom: none;}
 #configMenu li {

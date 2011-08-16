@@ -134,56 +134,52 @@
 
 .menu li.topLevel { width: auto; }
 
-#configMenuContainer {
+#popupMenuContainer {
 	position: absolute;
 	text-align: left;
 	display: none;
-}
-
-#configMenu a, #configMenu a:visited
-{
-	color: #333;
-}
-
-#configMenu a:hover
-{
-	color: #800000;
-}
-
-#configMenu {
-	position: relative;
+	top: 26px;
+	right: 5px;
+	width: 450px;
+	min-height: 50px;
 	background-color: #fff;
-	border: 2px solid #999;
-	border-radius: 4px;
-	box-shadow: 1px 1px 9px #ddd;
-	-moz-box-shadow:1px 1px 9px #ddd;
-	-webkit-border-radius: 5px;
-	padding: 3px;
 	z-index: 100;
+	padding: 2px;
+	border: 1px solid #999;
+	border-top: 0 none;
+	box-shadow: 0 0 3px #aaa;
 }
-#configMenu li:last-child { border-bottom: none;}
-#configMenu li {
-	width:150px;
+
+.popupMenu {
+	float: left;
+	margin: 2px 5px;
+	padding: 2px;
+}
+
+.popupMenu li:last-child { border-bottom: none;}
+.popupMenu li {
+	width:170px;
 	background-color: #fff;
 	opacity: 0.8;
 	padding: 3px;
 	margin: 1px;
-	border-bottom: 1px solid #333;
 }
 
-#configMenu li ul {
+.popupMenu li.topLevel {
+	float: left;
+	margin: 0 10px;
+	border-right: 1px solid #ccc;
+}
+
+.popupMenu li ul {
 	padding: 0;
-	margin: 0;
 }
 
-#configMenu li ul li {
+.popupMenu li ul li {
 	width: auto;
 	background-color: #f6f6f6;
 	margin-left: 5px;
 	border: none;
 }
 
-#configMenu li ul li a:before
-{
-	content: '+ ';
-}
+.popupMenu li ul li a:before { content: '+ '; }

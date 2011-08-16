@@ -1,13 +1,29 @@
 $(document).ready(function () {
 	$('#mainMenu').ptMenu();
 	
-	$('.jsConfigMenuLink').bind('click',function (e) {
-		e.preventDefault();
-		$('#configMenuContainer').toggle();
+	$('a.jsPopupMenuLink').click(function (e) {
+		var t = $(this);
+		
+		if(t.hasClass('activePopupItem')) {
+			t.removeClass('activePopupItem');
+			$('#popupMenuContainer').hide();
+		}
+		else {
+			$('a.activePopupItem').removeClass('activePopupItem');
+			t.addClass('activePopupItem');
+			
+			var target = t.attr('href').substring(1);
+			
+			$('#popupMenuContainer').children('ul').hide();
+			$('#' + target).show();
+			$('#popupMenuContainer').show();
+		}
+		
 		return false;
 	});
 	
 	$('body').bind('click',function (e) {
-		$('#configMenuContainer').hide();
+		$('#popupMenuContainer').hide();
+		$('a.activePopupItem').removeClass('activePopupItem');
 	});
 });

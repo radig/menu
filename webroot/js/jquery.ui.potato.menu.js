@@ -22,7 +22,7 @@
 		hoverClass : 'potato-menu-hover',
 		showDuration : 250,
 		hideDuration : 100
-	}
+	};
 	function menu() {
 		var option = (typeof (arguments[0]) != 'string') ? $.extend(defaults,
 				arguments[0]) : $.extend(defaults, {});
@@ -74,7 +74,7 @@
 		$menu.find('a[href^="#"]').click(function() {
 			$menuGroups.fadeOut(option.hideDuration);
 			return ($(this).attr('href') != '#');
-		})
+		});
 		return this;
 	}
 	$.fn.extend( {

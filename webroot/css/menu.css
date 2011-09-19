@@ -19,41 +19,39 @@
 	padding: 0;
 	border: 0;
 	display: block;
-	float: left;	/* move all main list items into one row, by floating them */
-	position: relative;	/* position each LI, thus creating potential IE.win overlap problem */
-	z-index: 5;		/* thus we need to apply explicit z-index here... */
+	float: left;
+	position: relative;
+	z-index: 5;
 }
 
 .menu li:hover {
-	z-index: 10000;	/* ...and here. this makes sure active item is always above anything else in the menu */
+	z-index: 10000;
 	white-space: normal;/* required to resolve IE7 :hover bug (z-index above is ignored if this is not present)
 							see http://www.tanfa.co.uk/css/articles/pure-css-popups-bug.asp for other stuff that work */
 }
 
 .menu li li {
-	float: none;/* items of the nested menus are kept on separate lines */
+	float: none;
 }
 
 .menu ul {
-	visibility: hidden;	/* initially hide all submenus. */
+	visibility: hidden;
 	position: absolute;
 	z-index: 10;
-	left: 0;	/* while hidden, always keep them at the top left corner, */
-	top: 0;		/* 		to avoid scrollbars as much as possible */
+	left: 0;
+	top: 0;
 }
 
 .menu li:hover>ul {
-	visibility: visible;	/* display submenu them on hover */
-	top: 100%;	/* 1st level go below their parent item */
+	visibility: visible;
+	top: 100%;
 }
 
-.menu li li:hover>ul {	/* 2nd+ levels go on the right side of the parent item */
+.menu li li:hover>ul {
 	top: 0;
 	left: 100%;
 }
 
-/* -- float.clear --
-	force containment of floated LIs inside of UL */
 .menu:after, .menu ul:after {
 	content: ".";
 	height: 0;
@@ -65,7 +63,6 @@
 .menu, .menu ul {	/* IE7 float clear: */
 	min-height: 0;
 }
-/* -- float.clear.END --  */
 
 /* -- sticky.submenu --
 	it should not disappear when your mouse moves a bit outside the submenu
@@ -91,7 +88,7 @@
 }
 
 .menu ul {
-	width: 13em;
+	width: auto;
 }
 
 .menu a {
@@ -130,9 +127,9 @@
 /*]]>*/
 
 
-.menu li.potato-menu-item { width:160px; }
+.menu li.potato-menu-item { width: 100%; min-width:160px; }
 
-.menu li.topLevel { width: auto; }
+.menu li.topLevel { width: auto; min-width: 100px;}
 
 #popupMenuContainer {
 	position: absolute;

@@ -17,7 +17,7 @@ class MenuHelper extends AppHelper
 		
 		if(isset($item['action']))
 		{
-			$out .= $this->Html->link($label, array('plugin' => $item['plugin'], 'controller' => $item['controller'], 'action' => $item['action'], isset($item['group_id']) ?  $item['group_id'] : '', $this->params['prefix'] => isset($item['admin']) ? $item['admin'] : true ), array('class' => ''));	
+			$out .= $this->Html->link($label, array('plugin' => $item['plugin'], 'controller' => $item['controller'], 'action' => $item['action'], isset($item['group_id']) ?  $item['group_id'] : '', $this->params['prefix'] => isset($item['admin']) ? $item['admin'] : true ), array('class' => ''));
 		}
 		else 
 		{
@@ -31,11 +31,11 @@ class MenuHelper extends AppHelper
 			{
 				$out .= $this->printItem($itens, $title);
 			}
-						
+			
 			$out .= '</ul>';
 		}
 
-		$out .= '</li>';		
+		$out .= '</li>';
 		return $out;
 	}
 	

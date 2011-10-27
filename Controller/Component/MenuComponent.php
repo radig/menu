@@ -1,5 +1,8 @@
 <?php
-class MenuComponent extends Object
+/**
+ * 
+ */
+class MenuComponent extends Component
 {
 	/**
 	 * Referência para o controlador que está em execução
@@ -14,11 +17,24 @@ class MenuComponent extends Object
 	 */
 	public $components = array('Auth', 'Acl', 'Session');
 	
-	protected  $user = null;
+	protected  $_user = null;
 	
-	public $settings = array(
+	private $_defaultSettings = array(
 		'acoTree' => array()
 	);
+	
+	/**
+	 * Construtor padrão
+	 * 
+	 * @param ComponentCollection $collection
+	 * @param array $settings
+	 */
+	public function __construct(ComponentCollection $collection, $settings = array())
+	{
+		parent::__construct($collection, $settings);
+		
+		$this->settings = Set::merge($this->_defaultSettings, $settings);
+	}
 	
 	/**
 	 * Inicialização do componente
@@ -26,13 +42,11 @@ class MenuComponent extends Object
 	 * @param Controller $controller
 	 * @param array $settings
 	 */
-	public function initialize(&$controller, $settings = array())
-	{	
-		// saving the controller reference for later use
+	public function initialize(&$controller)
+	{
 		$this->Controller =& $controller;
-		$this->settings = Set::merge($this->settings, $settings);
 		
-		$this->user = $this->Auth->user();
+		$this->_user = $this->Auth->user();
 	}
 	
 	/**
@@ -45,11 +59,22 @@ class MenuComponent extends Object
 		$this->Controller =& $controller;
 	}
 	
+	/**
+	 * Redefine árvore de Acos
+	 * 
+	 * @param array $acos
+	 */
 	public function setAcoTree(&$acos)
 	{
 		$this->settings['acoTree'] =& $acos;
 	}
 	
+	/**
+	 * Constroí menu, a partir de acos e lista de items
+	 * 
+	 * @param array $items
+	 * @param string $cacheKey
+	 */
 	public function build($items = array(), $cacheKey = 'Menu')
 	{
 		$menu = array();
@@ -98,7 +123,7 @@ class MenuComponent extends Object
 			}
 		}
 		
-		Cache::write("User.{$this->user['User']['id']}.{$cacheKey}", $menu);
+		Cache::write("User.{$this->_user['User']['id']}.{$cacheKey}", $menu);
 		
 		return $menu;
 	}
@@ -122,7 +147,7 @@ class MenuComponent extends Object
 			}
 		}
 		
-		Cache::write("User.{$this->user['User']['id']}.{$cacheKey}", $menu);
+		Cache::write("User.{$this->_user['User']['id']}.{$cacheKey}", $menu);
 		
 		return $menu;
 	}
@@ -178,7 +203,7 @@ class MenuComponent extends Object
 		if(empty($aco))
 			return true;
 			
-		$aro = '_' . $this->user['User']['username'];
+		$aro = '_' . $this->_user['User']['username'];
 		
 		return $this->Acl->check($aro, $aco);
 	}

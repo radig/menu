@@ -101,11 +101,9 @@
 .menu a:hover, .menu li:hover>a {
 }
 
-.menu li li {	/* create borders around each item */
-	border: 1px solid #fff;
-}
-.menu ul>li + li {	/* and remove the top border on all but first item in the list */
-	border-top: 0;
+.menu li li {
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
 }
 
 .menu li li:hover>ul {	/* inset 2nd+ submenus, to show off overlapping */

@@ -78,7 +78,7 @@ class MenuHelper extends AppHelper
 	 * 
 	 * @return string $menu
 	 */
-	public function build($items)
+	public function render($items)
 	{
 		$menu = '';
 		

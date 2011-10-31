@@ -1,0 +1,131 @@
+@CHARSET "UTF-8";
+
+
+.menu
+{
+	margin: 0px auto;
+	font-size: 0.89em;
+}
+
+/* remove all list stylings */
+.menu, .menu ul {
+	padding: 0;
+	border: 0;
+	list-style-type: none;
+	display: block;
+}
+
+.menu li {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	display: block;
+	float: left;
+	position: relative;
+	z-index: 5;
+}
+
+.menu li:hover {
+	z-index: 10000;
+	white-space: normal;/* required to resolve IE7 :hover bug (z-index above is ignored if this is not present)
+							see http://www.tanfa.co.uk/css/articles/pure-css-popups-bug.asp for other stuff that work */
+}
+
+.menu li li {
+	float: none;
+}
+
+.menu ul {
+	visibility: hidden;
+	position: absolute;
+	z-index: 10;
+	left: 0;
+	top: 0;
+}
+
+.menu li:hover>ul {
+	visibility: visible;
+	top: 100%;
+}
+
+.menu li li:hover>ul {
+	top: 0;
+	left: 100%;
+}
+
+.menu:after, .menu ul:after {
+	content: ".";
+	height: 0;
+	display: block;
+	visibility: hidden;
+	overflow: hidden;
+	clear: both;
+}
+.menu, .menu ul {	/* IE7 float clear: */
+	min-height: 0;
+}
+
+/* -- sticky.submenu --
+	it should not disappear when your mouse moves a bit outside the submenu
+	YOU SHOULD NOT STYLE the background of the ".menu UL" or this feature may not work properly!
+	if you do it, make sure you 110% know what you do */
+.menu ul {
+	background-image: url(/img/empty.gif);	/* required for sticky to work in IE6 and IE7 - due to their (different) hover bugs */
+	padding: 10px 30px 30px 30px;
+	margin: -10px 0 0 -30px;
+	/*background: #f00;*/	/* uncomment this if you want to see the "safe" area.
+								you can also use to adjust the safe area to your requirement */
+}
+.menu ul ul {
+	padding: 30px 30px 30px 10px;
+	margin: -30px 0 0 -10px;
+}
+/* -- sticky.submenu.END -- */
+
+.menu {
+}
+
+.menu ul li a {
+}
+
+.menu ul {
+	width: auto;
+}
+
+.menu a {
+	text-decoration: none;
+	padding: .4em 1em;
+	display: block;
+	position: relative;
+}
+
+.menu a:hover, .menu li:hover>a {
+}
+
+.menu li li {
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+}
+
+.menu li li:hover>ul {	/* inset 2nd+ submenus, to show off overlapping */
+	top: 5px;
+	left: 90%;
+}
+
+.menu>li:first-child>a:hover {
+}
+.menu li + li + li li:first-child>a:hover {
+}
+
+/* Fix for IE5/Mac \*//*/
+.menu a {
+	float: left;
+}
+/* End Fix */
+
+/*]]>*/
+
+
+.menu li.potato-menu-item { width: 100%; min-width:160px; }
+
+.menu li.topLevel { width: auto; min-width: 100px;}

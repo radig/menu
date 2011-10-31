@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	$('#mainMenu').ptMenu();
+	//$('#mainMenu').ptMenu();
 	
 	$('a.jsPopupMenuLink').click(function (e) {
 		var t = $(this);

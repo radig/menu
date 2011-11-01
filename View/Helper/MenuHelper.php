@@ -3,6 +3,11 @@ class MenuHelper extends AppHelper
 {
 	public $helpers = array('Html');
 	
+	public $settings = array(
+		'firstLevelClass' => 'topLevel',
+		'activeItemClass' => 'menu-active-item',
+	);
+	
 	/**
 	 * Método recursive que constrói um menu aninhado com submenus
 	 * 
@@ -104,7 +109,7 @@ class MenuHelper extends AppHelper
 	 */
 	protected function deepVisitor($nodes, $isRoot = true)
 	{
-		$out = '<li' . ($isRoot ? ' class="topLevel"' : '') . '>';
+		$out = '<li' . ($isRoot ? ' class="'. $this->settings['firstLevelClass'] .'"' : '') . '>';
 		
 		$url = array();
 		
@@ -120,7 +125,12 @@ class MenuHelper extends AppHelper
 		
 		if(empty($url['controller']))
 			$url = '#';
-			
+		
+		if($this->request->here == $this->url($url))
+		{
+			$nodes['class'] .= ' ' . $this->settings['activeItemClass'];
+		}
+		
 		$out .= $this->Html->link(__($nodes['title'], true), $url, array('class' => $nodes['class'], 'title' => $nodes['title']));
 		
 		if(isset($nodes['childs']) && !empty($nodes['childs']))

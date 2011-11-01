@@ -49,8 +49,8 @@ jQuery.fn.initMenu = function() {
         $('li.topLevel a', this).addClass('ui-state-default');
         $('li:not(.topLevel)', this).addClass('ui-widget-content');
         $('li:not(.topLevel) a', this).addClass('ui-state-active');
-        $('li.expand > .acitem', this).show();
-        $('li.expand > .acitem', this).prev().addClass('ui-state-active');
+        $('li.expand > .menu-active-item', this).show();
+        $('li.expand > .menu-active-item', this).prev().addClass('ui-state-active');
         $('li a', this).hover(
         	function() {
         		$(this).addClass('ui-state-hover');
@@ -80,7 +80,7 @@ jQuery.fn.initMenu = function() {
                     }
                 }
                 else {
-                    if(theElement.hasClass('acitem') && theElement.is(':visible')) {
+                    if(theElement.hasClass('menu-active-item') && theElement.is(':visible')) {
                         if($(parent).hasClass('collapsible')) {
                             $('.acitem:visible', parent).first().slideUp('normal', 
                             function() {
@@ -89,8 +89,8 @@ jQuery.fn.initMenu = function() {
                         );
                     }
                 }
-                if(theElement.hasClass('acitem') && !theElement.is(':visible')) {         
-                    $('.acitem:visible', parent).first().slideUp('normal', function() {
+                if(theElement.hasClass('menu-active-item') && !theElement.is(':visible')) {         
+                    $('.menu-active-item:visible', parent).first().slideUp('normal', function() {
                         $(this).prev().removeClass('ui-state-active');
                     });
                     theElement.slideDown('normal', function() {

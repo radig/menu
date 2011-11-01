@@ -13,35 +13,12 @@ ul.menu li {
   margin-top: 1px;
 }
 
-ul.menu li a, ul.menu ul.menu li a {
-  background: #333;
-  color: #fff;	
+ul.menu li a {
   padding: 0.5em;
 }
 
-ul.menu li a:hover, ul.menu ul.menu li a:hover {
-  background: #000;
-}
 
-ul.menu li ul li a, ul.menu ul.menu li ul li a {
-  background: #ccc;
-  color: #000;
+ul.menu li ul li a {
+	border: 0 none;
   padding-left: 20px;
-}
-
-ul.menu li ul li a:hover, ul.menu ul.menu li ul li a:hover {
-  background: #aaa;
-  border-left: 5px #000 solid;
-  padding-left: 15px;
-}
-ul.menu ul.menu li a:hover {
-    border-left: 0;
-    padding-left: 0.5em;
-}
-ul.menu ul.menu {
-    border-left: 5px #f00 solid;
-}
-ul.menu a.active, ul.menu ul.menu li a.active, ul.menu a.active:hover, ul.menu ul.menu li a.active:hover {
-    text-decoration: underline;
-    background: #c00;
 }

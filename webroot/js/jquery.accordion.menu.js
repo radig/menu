@@ -46,49 +46,56 @@ Free to use any way you like.
 
 jQuery.fn.initMenu = function() {  
     return this.each(function(){
-        var theMenu = $(this).get(0);
-        $('.acitem', this).hide();
+        $('li.topLevel a', this).addClass('ui-state-default');
+        $('li:not(.topLevel)', this).addClass('ui-widget-content');
+        $('li:not(.topLevel) a', this).addClass('ui-state-active');
         $('li.expand > .acitem', this).show();
-        $('li.expand > .acitem', this).prev().addClass('active');
+        $('li.expand > .acitem', this).prev().addClass('ui-state-active');
+        $('li a', this).hover(
+        	function() {
+        		$(this).addClass('ui-state-hover');
+        	},
+        	function() {
+        		$(this).removeClass('ui-state-hover');
+        	}
+        );
         $('li a', this).click(
             function(e) {
                 e.stopImmediatePropagation();
                 var theElement = $(this).next();
                 var parent = this.parentNode.parentNode;
                 if($(parent).hasClass('noaccordion')) {
-                    if(theElement[0] === undefined) {
-                        window.location.href = this.href;
-                    }
                     $(theElement).slideToggle('normal', function() {
                         if ($(this).is(':visible')) {
-                            $(this).prev().addClass('active');
+                        	//TODO ícone de menu aberto
                         }
                         else {
-                            $(this).prev().removeClass('active');
-                        }    
+                        	//TODO ícone de menu fechado
+                        }
                     });
-                    return false;
+                    
+                    if($(this).attr('href') == '#')
+                    {
+                    	return false;
+                    }
                 }
                 else {
                     if(theElement.hasClass('acitem') && theElement.is(':visible')) {
                         if($(parent).hasClass('collapsible')) {
                             $('.acitem:visible', parent).first().slideUp('normal', 
                             function() {
-                                $(this).prev().removeClass('active');
+                                $(this).prev().removeClass('ui-state-active');
                             }
                         );
-                        return false;  
                     }
-                    return false;
                 }
                 if(theElement.hasClass('acitem') && !theElement.is(':visible')) {         
                     $('.acitem:visible', parent).first().slideUp('normal', function() {
-                        $(this).prev().removeClass('active');
+                        $(this).prev().removeClass('ui-state-active');
                     });
                     theElement.slideDown('normal', function() {
-                        $(this).prev().addClass('active');
+                        $(this).prev().addClass('ui-state-active');
                     });
-                    return false;
                 }
             }
         }

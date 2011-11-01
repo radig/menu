@@ -1,1 +1,35 @@
 @CHARSET "UTF-8";
+
+/* remove all list stylings */
+.menu, .menu ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	display: block;
+}
+
+.menu li {
+	display: block;
+	float: left;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #000;
+	width: 90%;
+	z-index: 5;
+}
+
+.menu a {
+	text-decoration: none;
+	padding: .4em 1em;
+	display: block;
+	position: relative;
+}
+
+.menu a:hover, .menu li:hover>a {
+}
+
+.menu li ul li {
+	border: 0 none;
+	width: 100%;
+}

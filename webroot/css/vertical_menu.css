@@ -25,7 +25,12 @@
 	position: relative;
 }
 
-.menu a:hover, .menu li:hover>a {
+.menu li ul li a:hover, .menu li ul li:hover>a {
+	background: url(/img/arrow-east-icon.png) #fff no-repeat 2px 6px;
+}
+
+.menu ul a.menu-active-item {;
+	background: #83C5F6;
 }
 
 .menu li ul li {

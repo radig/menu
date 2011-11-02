@@ -51,7 +51,7 @@ jQuery.fn.initMenu = function() {
         $('li:not(.topLevel) a', this).addClass('ui-state-active');
         $('li.expand > .menu-active-item', this).show();
         $('li.expand > .menu-active-item', this).prev().addClass('ui-state-active');
-        $('li a', this).hover(
+        $('a:not(.ui-state-active)', this).hover(
         	function() {
         		$(this).addClass('ui-state-hover');
         	},
@@ -59,11 +59,17 @@ jQuery.fn.initMenu = function() {
         		$(this).removeClass('ui-state-hover');
         	}
         );
-        $('li a', this).click(
+        $('a', this).click(
             function(e) {
                 e.stopImmediatePropagation();
                 var theElement = $(this).next();
                 var parent = this.parentNode.parentNode;
+                
+                if($(this).attr('href') != '#')
+                {
+                	return true;
+                }
+                
                 if($(parent).hasClass('noaccordion')) {
                     $(theElement).slideToggle('normal', function() {
                         if ($(this).is(':visible')) {
@@ -85,22 +91,29 @@ jQuery.fn.initMenu = function() {
                             $('.acitem:visible', parent).first().slideUp('normal', 
                             function() {
                                 $(this).prev().removeClass('ui-state-active');
-                            }
-                        );
+                            });
+                        }
                     }
+	                if(theElement.hasClass('menu-active-item') && !theElement.is(':visible')) {         
+	                    $('.menu-active-item:visible', parent).first().slideUp('normal', function() {
+	                        $(this).prev().removeClass('ui-state-active');
+	                    });
+	                    theElement.slideDown('normal', function() {
+	                        $(this).prev().addClass('ui-state-active');
+	                    });
+	                }
                 }
-                if(theElement.hasClass('menu-active-item') && !theElement.is(':visible')) {         
-                    $('.menu-active-item:visible', parent).first().slideUp('normal', function() {
-                        $(this).prev().removeClass('ui-state-active');
-                    });
-                    theElement.slideDown('normal', function() {
-                        $(this).prev().addClass('ui-state-active');
-                    });
-                }
-            }
-        }
-    );
-});
+            });
+        
+        $('a', this).each(function () {
+        	var el = $(this);
+        	
+        	if(el.hasClass('menu-active-item')) {
+        		el.removeClass('menu-active-item');
+        		el.addClass('menu-active-item');
+        	}
+        });
+    });
 };
 
 $(document).ready(function() {$('.menu').initMenu();});

@@ -19,18 +19,31 @@
 }
 
 .menu a {
-	text-decoration: none;
-	padding: .4em 1em;
+	background: url("/img/jquery-ui/buttonBg.png") repeat-x scroll 50% 50% transparent;
+	color: #FFFFFF;
 	display: block;
+	padding: 0.4em 1em;
 	position: relative;
+	text-decoration: none;
+}
+
+.menu a:hover {
+	background: url("/img/jquery-ui/buttonBg2.png") repeat-x scroll 50% 50% transparent;
+	color: #FFFFFF;
 }
 
 .menu li ul li a:hover, .menu li ul li:hover>a {
-	background: url(/img/arrow-east-icon.png) #fff no-repeat 2px 6px;
+	background: url(/img/arrow-east-icon2.png) #D0E5F5 no-repeat 2px 6px;
+	border: 1px solid #79B7E7;
+	color: #1D5987;
+	font-weight: bold;
 }
 
 .menu ul a.menu-active-item {;
-	background: #83C5F6;
+	background: url(/img/arrow-east-icon2.png) #D0E5F5 no-repeat 2px 6px;
+	border: 1px solid #79B7E7;
+	color: #1D5987;
+	font-weight: bold;
 }
 
 .menu li ul li {

@@ -146,7 +146,7 @@ class MenuHelper extends AppHelper
 		
 		if(isset($nodes['childs']) && !empty($nodes['childs']))
 		{
-			$out .= '<ul>';
+			$out .= '<ul style="display:none">';
 			
 			foreach($nodes['childs'] as $child)
 			{

@@ -1,4 +1,15 @@
 <?php
+/**
+ * Helper que constrói o código HTML de navegação
+ * para o menu gerado.
+ * 
+ * @package		radig.Menu.View.Helper
+ * @copyright		Radig Soluções em TI
+ * @author			Radig Dev Team - suporte@radig.com.br
+ * @version		2.0
+ * @license		Vide arquivo LICENCA incluído no pacote
+ * @link			http://radig.com.br
+ */
 class MenuHelper extends AppHelper
 {
 	public $helpers = array('Html');

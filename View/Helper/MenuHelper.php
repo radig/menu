@@ -15,8 +15,8 @@ class MenuHelper extends AppHelper
 	public $helpers = array('Html');
 	
 	public $settings = array(
-		'firstLevelClass' => 'topLevel',
-		'activeItemClass' => 'menu-active-item',
+		'firstLevelClass' => 'dropdown',
+		'activeItemClass' => 'active',
 	);
 	
 	/**
@@ -110,6 +110,31 @@ class MenuHelper extends AppHelper
 	}
 	
 	/**
+	 * Constroí e retorna um menu completo
+	 * 
+	 * @param array $items Itens do menu em um array aninhado (estilo árvore)
+	 * 
+	 * @return string $menu
+	 */
+	public function renderSide($items)
+	{
+		$menu = '';
+		$menuRelation = Configure::read('Radig.Menu.Relation');
+		$arrayItem = $menuRelation[$this->request->here];
+
+		if(empty($arrayItem))
+			return $menu;
+
+		foreach($arrayItem as $key)
+		{
+			$menu .= $this->deepVisitorSide($items[$key]);
+		}
+		
+		
+		return $menu;
+	}
+	
+	/**
 	 * Constroí uma lista aninhada recursivamente, a partir de um
 	 * array hierárquico
 	 * 
@@ -120,7 +145,73 @@ class MenuHelper extends AppHelper
 	 */
 	protected function deepVisitor($nodes, $isRoot = true)
 	{
-		$out = '<li' . ($isRoot ? ' class="'. $this->settings['firstLevelClass'] .'"' : '') . '>';
+		$out = '<li class=" ';
+		
+		if($isRoot && isset($nodes['childs']) && !empty($nodes['childs']))
+		{
+			$out .= $this->settings['firstLevelClass'];
+		}
+		
+		$url = array();
+		
+		$url['prefix'] = empty($nodes['prefix']) ? false : $nodes['prefix'];
+		
+		$url['plugin'] = empty($nodes['plugin']) ? false : $nodes['plugin'];
+		
+		$url['controller'] = empty($nodes['controller']) ? false : $nodes['controller'];
+		
+		$url['action'] = empty($nodes['action']) ? false : $nodes['action'];
+		
+		$nodes['class'] = !isset($nodes['class']) ? '' : $nodes['class'];
+
+		if($this->hasUrl($nodes))
+		{
+			$out .= ' ' . $this->settings['activeItemClass'];
+		}
+		
+		$out .= '">';
+		
+		if(empty($url['controller']))
+			$url = '#';
+		
+		if(!isset($nodes['childs']) && empty($nodes['childs']))
+			$out .= $this->Html->link(__($nodes['title'], true), $url, array('class' => $nodes['class'], 'title' => $nodes['title']));
+		
+		if(isset($nodes['childs']) && !empty($nodes['childs']))
+		{
+			$out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">'.__($nodes['title'], true).'<b class="caret"></b></a>';
+			$out .= '<ul class="dropdown-menu">';
+			
+			foreach($nodes['childs'] as $child)
+			{
+				$out .= $this->deepVisitor($child, false);
+			}
+			
+			$out .= '</ul>';
+		}
+		
+		$out .= '</li>';
+		
+		return $out;
+	}
+
+	/**
+	 * Constroí uma lista aninhada recursivamente, a partir de um
+	 * array hierárquico
+	 * 
+	 * @param array $nodes
+	 * @param bool $isRoot
+	 * 
+	 * @return string $out Lista aninhada
+	 */
+	protected function deepVisitorSide($nodes)
+	{
+		$out = '<li class=" ';
+		
+		if(isset($nodes['childs']) && !empty($nodes['childs']))
+		{
+			$out .= 'nav-header';
+		}
 		
 		$url = array();
 		
@@ -134,30 +225,59 @@ class MenuHelper extends AppHelper
 		
 		$nodes['class'] = !isset($nodes['class']) ? '' : $nodes['class'];
 		
+		$out .= '">';
+		
 		if(empty($url['controller']))
-			$url = '#';
+			$out .= __($nodes['title'], true);
+		else
+			$out .= $this->Html->link(__($nodes['title'], true), $url, array('class' => $nodes['class'], 'title' => $nodes['title']));
 		
-		if($this->request->here == $this->url($url))
-		{
-			$nodes['class'] .= ' ' . $this->settings['activeItemClass'];
-		}
-		
-		$out .= $this->Html->link(__($nodes['title'], true), $url, array('class' => $nodes['class'], 'title' => $nodes['title']));
+		$out .= '</li>';
 		
 		if(isset($nodes['childs']) && !empty($nodes['childs']))
 		{
-			$out .= '<ul style="display:none">';
-			
 			foreach($nodes['childs'] as $child)
 			{
 				$out .= $this->deepVisitor($child, false);
 			}
-			
-			$out .= '</ul>';
 		}
 		
-		$out .= '</li>';
-		
 		return $out;
+	}
+
+	/**
+	 * Percorre os filhos, procura por algum item ativo
+	 * 
+	 * @param array $nodes
+	 * 
+	 * @return boolean Item está ativo
+	 */
+	protected function hasUrl($nodes)
+	{
+		$url = array();
+		
+		$url['prefix'] = empty($nodes['prefix']) ? false : $nodes['prefix'];
+		
+		$url['plugin'] = empty($nodes['plugin']) ? false : $nodes['plugin'];
+		
+		$url['controller'] = empty($nodes['controller']) ? false : $nodes['controller'];
+		
+		$url['action'] = empty($nodes['action']) ? false : $nodes['action'];
+		
+		$nodes['class'] = !isset($nodes['class']) ? '' : $nodes['class'];
+		
+		if($this->request->here == $this->url($url))
+		{
+			return true;
+		}
+		if(isset($nodes['childs']) && !empty($nodes['childs']))
+		{
+			foreach($nodes['childs'] as $child)
+			{
+				return $this->hasUrl($child);
+			}
+		}
+		
+		return false;
 	}
 }

@@ -76,8 +76,6 @@ class MenuBuilderComponent extends Component
 	*/
 	public function build()
 	{
-		$menu = array();
-		
 		if(!Cache::read("User.{$this->_user['id']}.Menu"))
 		{
 			$this->_setupAcoTree();
@@ -92,27 +90,35 @@ class MenuBuilderComponent extends Component
 	}
 	
 	/**
+	* Monta o menu da sidebar para as ações permitidas
+	*
+	* @return null
+	*/
+	public function buildSidebar()
+	{
+		if(!Cache::read("User.{$this->_user['id']}.MenuSide"))
+		{
+			$this->_setupAcoTree();
+			$sideMenu = $this->_build(Configure::read('Radig.Menu.Side'), 'MenuSide');
+		}
+		else
+		{
+			$sideMenu = Cache::read("User.{$this->_user['id']}.MenuSide");
+		}
+		return $sideMenu;
+	}
+	
+	/**
 	 * Monta o menu de configurações com ações permitidas
 	 *
 	 * @return null
 	 */
 	public function buildConfigurationMenu()
 	{
-		$menu = array();
-	
 		if(!Cache::read("User.{$this->_user['id']}.ConfigMenu"))
 		{
-			$rawMenu = Configure::read('ConfigurationMenu');
-	
-			$profile = $this->profileAction;
-	
-			$profile['title'] = 'Meus Dados';
-			$profile['class'] = 'button-app-profile button user-button';
-	
-			$rawMenu[] = $profile;
-
 			$this->_setupAcoTree();
-			$menu = $this->_build($rawMenu, 'ConfigMenu');
+			$menu = $this->_build(Configure::read('Radig.Menu.Configuration'), 'ConfigMenu');
 		}
 		else
 		{

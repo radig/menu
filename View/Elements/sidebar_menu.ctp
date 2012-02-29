@@ -1,6 +1,6 @@
 <?php
 $menuRelation = Configure::read('Radig.Menu.Relation');
-if(isset($menuSidebarItems) && isset($menuRelation[$this->request->here])): 
+if(isset($menuSidebarItems) && isset($menuRelation[$this->Menu->getHere()])): 
 ?>
 	<div id="offset" class="span1"></div>
 	<div id="sidebar" class="span2">

@@ -120,7 +120,8 @@ class MenuHelper extends AppHelper
 	{
 		$menu = '';
 		$menuRelation = Configure::read('Radig.Menu.Relation');
-		$arrayItem = $menuRelation[$this->request->here];
+		
+		$arrayItem = $menuRelation[$this->getHere()];
 
 		if(empty($arrayItem))
 			return $menu;
@@ -163,6 +164,8 @@ class MenuHelper extends AppHelper
 		$url['action'] = empty($nodes['action']) ? false : $nodes['action'];
 		
 		$nodes['class'] = !isset($nodes['class']) ? '' : $nodes['class'];
+		
+		$nodes['icon'] = !isset($nodes['icon']) ? '' : $nodes['icon'];
 
 		if($this->hasUrl($nodes))
 		{
@@ -175,7 +178,8 @@ class MenuHelper extends AppHelper
 			$url = '#';
 		
 		if(!isset($nodes['childs']) && empty($nodes['childs']))
-			$out .= $this->Html->link(__($nodes['title'], true), $url, array('class' => $nodes['class'], 'title' => $nodes['title']));
+			$out .= $this->Html->link( (!empty($nodes['icon'])?$this->Html->tag('i', '', array('class' => $nodes['icon'].' icon-white')):'') . __($nodes['title'], true), $url, array('class' => $nodes['class'], 'title' => $nodes['title'], 'escape' => false));
+		
 		
 		if(isset($nodes['childs']) && !empty($nodes['childs']))
 		{
@@ -280,4 +284,24 @@ class MenuHelper extends AppHelper
 		
 		return false;
 	}
+	
+	/**
+	 *  
+	 */
+	public function getHere()
+	{
+		$here = '';
+		
+		if(!empty($this->request->params['plugin']))
+			$here .= $this->request->params['plugin'].'/';
+		
+		if(!empty($this->request->params['controller']))
+			$here .= $this->request->params['controller'].'/';
+		
+		if(!empty($this->request->params['action']))
+			$here .= $this->request->params['action'];
+		
+		return $here;
+	}
+	
 }

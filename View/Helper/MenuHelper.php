@@ -121,7 +121,7 @@ class MenuHelper extends AppHelper
 		$menu = '';
 		$menuRelation = Configure::read('Radig.Menu.Relation');
 		
-		$arrayItem = $menuRelation[$this->getHere()];
+		$arrayItem = $this->getRelated();
 
 		if(empty($arrayItem))
 			return $menu;
@@ -286,9 +286,11 @@ class MenuHelper extends AppHelper
 	}
 	
 	/**
-	 *  
+	 * Retorna rota completa do ponto em que a função foi chamada
+	 * 
+	 * @return string Rota
 	 */
-	public function getHere()
+	protected function getHere()
 	{
 		$here = '';
 		
@@ -303,5 +305,19 @@ class MenuHelper extends AppHelper
 		
 		return $here;
 	}
-	
+
+	/**
+	 * Retorna relação de menu/sidebar menu, ou nulo caso não exista
+	 * 
+	 * @return array Relação de Sidebar Menus
+	 */
+	public function getRelated()
+	{
+		$menuRelation = Configure::read('Radig.Menu.Relation');
+		
+		if(isset($menuRelation[$this->getHere()]))
+			return $menuRelation[$this->getHere()];
+		
+		return null;
+	}
 }

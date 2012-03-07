@@ -8,7 +8,7 @@
 				<span class="icon-bar"></span>
 			</a>
 			
-			<a class="brand" href="#"><?php echo Configure::read('Project'); ?></a>
+			<a class="brand" href="/"><?php echo Configure::read('Project'); ?></a>
 			
 			<div class="nav-collapse">
 				<?php if(isset($menuItems)): ?>
@@ -16,9 +16,6 @@
 						<?php echo $this->Menu->render($menuItems);?>
 					</ul>
 					
-					<form class="navbar-search pull-left">
-						<input type="text" class="search-query" placeholder="Search">
-					</form>
 				<?php endif; ?>
 				
 				<?php if(isset($menuConfigureItems)): ?>

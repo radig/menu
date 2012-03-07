@@ -1,8 +1,9 @@
 <?php
 $related = $this->Menu->getRelated();
-if(isset($menuSidebarItems) && isset($related)): 
+if(isset($menuSidebarItems) && isset($related)):
 ?>
-	<div id="offset" class="span1"></div>
+	<div id="offset" class="span1">
+	</div>
 	<div id="sidebar" class="span2">
 		<?php if(!empty($activeUser) && isset($menuSidebarItems)): ?>
 			<div class="well" style="padding: 8px 0;">

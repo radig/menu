@@ -179,7 +179,7 @@ class MenuHelper extends AppHelper
 		
 		if(!isset($nodes['childs']) && empty($nodes['childs']))
 			$out .= $this->Html->link(
-				(!empty($nodes['icon'])?$this->Html->tag('i', '', array('class' => $nodes['icon'].' icon-white')):'') . __($nodes['title'], true),
+				(!empty($nodes['icon'])?$this->Html->tag('i', '', array('class' => $nodes['icon'])):'') . __($nodes['title'], true),
 				$url, 
 				array('class' => $nodes['class'], 'title' => $nodes['title'], 'escape' => false)
 			);

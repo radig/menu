@@ -85,7 +85,7 @@ class MenuBuilderComponent extends Component
 		{
 			$menu = Cache::read("User.{$this->_user['id']}.Menu");
 		}
-	
+
 		return $menu;
 	}
 	
@@ -176,7 +176,7 @@ class MenuBuilderComponent extends Component
 		}
 		
 		Cache::write("User.{$this->_user['id']}.{$cacheKey}", $menu);
-		
+
 		return $menu;
 	}
 	
@@ -196,12 +196,16 @@ class MenuBuilderComponent extends Component
 			if($this->_checkMenuNode($item))
 			{
 				if(isset($item['childs']) && !empty($item['childs']))
+				{
 					$item['childs'] = $this->_deepCheck($item['childs']);
+
+					if(empty($item['childs']))
+						unset($items[$k]);
+				}
 			}
 			else
 				unset($items[$k]);
 		}
-			
 		return $items;
 	}
 	

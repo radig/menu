@@ -299,10 +299,10 @@ class MenuHelper extends AppHelper
 		$here = '';
 		
 		if(!empty($this->request->params['plugin']))
-			$here .= $this->request->params['plugin'].'/';
+			$here .= strtolower($this->request->params['plugin']).'/';
 		
 		if(!empty($this->request->params['controller']))
-			$here .= $this->request->params['controller'].'/';
+			$here .= strtolower($this->request->params['controller']).'/';
 		
 		if(!empty($this->request->params['action']))
 			$here .= $this->request->params['action'];

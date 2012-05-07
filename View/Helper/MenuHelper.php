@@ -126,6 +126,12 @@ class MenuHelper extends AppHelper
 		if(empty($arrayItem))
 			return $menu;
 
+		// Coringa
+		if($arrayItem === true)
+		{
+			$arrayItem = array_keys($items);
+		}
+
 		foreach($arrayItem as $key)
 		{
 			$menu .= $this->deepVisitorSide($items[$key]);
@@ -321,6 +327,10 @@ class MenuHelper extends AppHelper
 		
 		if(isset($menuRelation[$this->getHere()]))
 			return $menuRelation[$this->getHere()];
+
+		// Coringa
+		if(isset($menuRelation['*']))
+			return true;
 		
 		return null;
 	}

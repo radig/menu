@@ -6,7 +6,7 @@ if(isset($menuSidebarItems) && isset($related)):
 	</div>
 	<div id="sidebar" class="span2">
 		<?php if(!empty($activeUser) && isset($menuSidebarItems)): ?>
-			<div class="well" style="padding: 8px 0;">
+			<div class="well">
 				<ul class="nav nav-list">
 					<?php echo $this->Menu->renderSide($menuSidebarItems);?>
 				</ul>

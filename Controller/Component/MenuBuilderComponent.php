@@ -1,14 +1,15 @@
 <?php
+App::uses('Component', 'Controller');
 /**
  * Componente que constrói um Menu baseado nas permissões
  * do usuário.
  *
  * @package		radig.Menu.Controller.Component
- * @copyright		Radig Soluções em TI
- * @author			Radig Dev Team - suporte@radig.com.br
- * @version		2.0
+ * @copyright	Radig Soluções em TI
+ * @author		Radig Dev Team - suporte@radig.com.br
+ * @version		3.1
  * @license		Vide arquivo LICENCA incluído no pacote
- * @link			http://radig.com.br
+ * @link		http://radig.com.br
  */
 class MenuBuilderComponent extends Component
 {
@@ -28,7 +29,9 @@ class MenuBuilderComponent extends Component
 	protected  $_user = null;
 
 	private $_defaultSettings = array(
-		'rootNode' => 'controllers'
+		'rootNode' => 'controllers',
+		'cacheConfig' => 'default',
+		'aroNamePrefix' => '_'
 	);
 
 	private $_acoTree = array();
@@ -74,55 +77,22 @@ class MenuBuilderComponent extends Component
 	*
 	* @return null
 	*/
-	public function build()
+	public function build($items, $key = 'Main', $useCache = true)
 	{
-		if(!Cache::read("User.{$this->_user['id']}.Menu"))
-		{
-			$this->_setupAcoTree();
-			$menu = $this->_build(Configure::read('Radig.Menu.Main'));
-		}
-		else
-		{
-			$menu = Cache::read("User.{$this->_user['id']}.Menu");
+		$cached = null;
+		if($useCache) {
+			$cached = Cache::read("Menu.{$this->_user['id']}.{$key}", $this->settings['cacheConfig']);
 		}
 
-		return $menu;
-	}
+		if($useCache && !empty($cached)) {
+			return $cached;
+		}
 
-	/**
-	* Monta o menu da sidebar para as ações permitidas
-	*
-	* @return null
-	*/
-	public function buildSidebar()
-	{
-		if(!Cache::read("User.{$this->_user['id']}.MenuSide"))
-		{
-			$this->_setupAcoTree();
-			$sideMenu = $this->_build(Configure::read('Radig.Menu.Side'), 'MenuSide');
-		}
-		else
-		{
-			$sideMenu = Cache::read("User.{$this->_user['id']}.MenuSide");
-		}
-		return $sideMenu;
-	}
+		$this->_setupAcoTree($useCache);
+		$menu = $this->_build($items);
 
-	/**
-	 * Monta o menu de configurações com ações permitidas
-	 *
-	 * @return null
-	 */
-	public function buildConfigurationMenu()
-	{
-		if(!Cache::read("User.{$this->_user['id']}.ConfigMenu"))
-		{
-			$this->_setupAcoTree();
-			$menu = $this->_build(Configure::read('Radig.Menu.Configuration'), 'ConfigMenu');
-		}
-		else
-		{
-			$menu = Cache::read("User.{$this->_user['id']}.ConfigMenu");
+		if($useCache) {
+			Cache::write("Menu.{$this->_user['id']}.{$key}", $menu, $this->settings['cacheConfig']);
 		}
 
 		return $menu;
@@ -131,26 +101,25 @@ class MenuBuilderComponent extends Component
 	/**
 	* Recupera árvore de Acos
 	*
+	* @param bool $useCache
 	* @return array $acoTree
 	*/
-	protected function _setupAcoTree()
+	protected function _setupAcoTree($useCache = true)
 	{
-		if(empty($this->_acoTree))
-		{
+		if(empty($this->_acoTree) && $useCache) {
 			// primeiramente verifica por cache contendo a arvore, se existir, a utiliza
-			$tree = Cache::read('User.' . $this->_user['id'] . '.Aco');
+			$cached = Cache::read('AcoTree.' . $this->_user['id'], $this->settings['cacheConfig']);
 
-			if($tree !== false)
-			{
-				$this->_acoTree = $tree;
+			if($cached) {
+				$this->_acoTree = $cached;
+				return $cached;
 			}
-			else
-			{
-				$this->_acoTree = $this->__buildAcoTree();
+		}
 
-				// faz cache da árvore
-				Cache::write('User.' . $this->_user['id'] . '.Aco', $tree);
-			}
+		$this->_acoTree = $this->__buildAcoTree();
+
+		if($useCache) {
+			Cache::write('AcoTree.' . $this->_user['id'], $this->_acoTree, $this->settings['cacheConfig']);
 		}
 
 		return $this->_acoTree;
@@ -160,22 +129,18 @@ class MenuBuilderComponent extends Component
 	 * Constroí menu utilizando como entrada um array com elementos em cascata (recursivos)
 	 *
 	 * @param array $items
-	 * @param array $cacheKey
+	 * @return array $menu
 	 */
-	protected function _build($items = array(), $cacheKey = 'Menu')
+	protected function _build($items = array())
 	{
 		$menu = $this->_deepCheck($items);
 
-		// varre o menu em busca de pais sem filho e sem ação (botão estético vazio)
-		foreach($menu as $key => $button)
-		{
-			if(!isset($button['childs']) && empty($button['controller']) && empty($button['action']))
-			{
+		// varre o menu em busca de pais sem filho e sem ação (botão estático)
+		foreach($menu as $key => $button) {
+			if(!isset($button['childs']) && empty($button['controller']) && empty($button['action'])) {
 				unset($menu[$key]);
 			}
 		}
-
-		Cache::write("User.{$this->_user['id']}.{$cacheKey}", $menu);
 
 		return $menu;
 	}
@@ -185,72 +150,64 @@ class MenuBuilderComponent extends Component
 	 * recursivamente.
 	 *
 	 * @param array $items
+	 * @return array $items
 	 */
 	protected function _deepCheck(&$items)
 	{
-		if(!is_array($items))
+		if(!is_array($items)) {
 			return array();
+		}
 
-		foreach($items as $k => $item)
-		{
-			if($this->_checkMenuNode($item))
-			{
-				if(isset($item['childs']) && !empty($item['childs']))
-				{
+		foreach($items as $k => $item) {
+			if($this->_checkMenuNode($item)) {
+				if(isset($item['childs']) && !empty($item['childs'])) {
 					$item['childs'] = $this->_deepCheck($item['childs']);
 
-					if(empty($item['childs']))
+					if(empty($item['childs'])) {
 						unset($items[$k]);
+					}
 				}
+
+				continue;
 			}
-			else
-				unset($items[$k]);
+
+			unset($items[$k]);
 		}
+
 		return $items;
 	}
 
 	/**
+	 * Checa as permissões para o usuário para uma determinada ação/nó
 	 *
+	 * @param array $menu Menu padrão com URL do CakePHP
+	 * @return boolean TRUE se o usuário logado tiver permissão para
+	 * a ação, FALSE caso contrário
 	 */
 	protected function _checkMenuNode($menu)
 	{
 		$aco = 'controllers/';
 
-		if(!empty($menu['plugin']))
+		if(!empty($menu['plugin'])) {
 			$aco .= Inflector::camelize($menu['plugin']) . '/';
+		}
 
-		if(!empty($menu['controller']))
+		if(!empty($menu['controller'])) {
 			$aco .= Inflector::camelize($menu['controller']) . '/';
+		}
 
-		if(!empty($menu['action']))
+		if(!empty($menu['action'])) {
 			$aco .= $menu['action'];
+		}
 
 		// Caso o item de menu não tenha url, ele é autorizado por padrão
-		if($aco === 'controllers/')
+		if($aco === 'controllers/') {
 			return true;
+		}
 
-		$aro = '_' . $this->_user['username'];
+		$aro = $this->settings['aroNamePrefix'] . $this->_user['username'];
 
 		return $this->Acl->check($aro, $aco);
-	}
-
-	/**
-	 * Busca e retorna a permissão para um nó na
-	 * árvore de acos
-	 *
-	 * @param string $alias
-	 */
-	protected function _getAcoNode($alias = '')
-	{
-		if(empty($this->_acoTree))
-			return false;
-
-		$alias = Inflector::camelize($alias);
-
-		foreach($this->_acoTree[$this->settings['rootNode']] as $node)
-		{
-			return $this->_deepSearch($node, $term);
-		}
 	}
 
 	/**
@@ -261,17 +218,14 @@ class MenuBuilderComponent extends Component
 	 */
 	protected function _deepSearch($nodes, $term)
 	{
-		if($nodes['alias'] == $term)
-		{
+		if($nodes['alias'] == $term) {
 			return (bool)$nodes['authorized'];
 		}
 
-		if(isset($nodes['childs']))
-		{
+		if(isset($nodes['childs'])) {
 			$authorized = true;
 
-			foreach($nodes['childs'] as $child)
-			{
+			foreach($nodes['childs'] as $child) {
 				$authorized = $authorized && $this->_deepSearch($child, $term);
 			}
 
@@ -284,6 +238,8 @@ class MenuBuilderComponent extends Component
 	/**
 	 * Constroi e retorna uma árvore de ações juntamente com permissão de
 	 * acesso para o usuário logado.
+	 *
+	 * @return array $acoTree
 	 */
 	private function __buildAcoTree()
 	{
@@ -295,20 +251,18 @@ class MenuBuilderComponent extends Component
 		$aroTree = array_reverse($this->Acl->Aro->node(array('model' => 'User', 'foreign_key' => $this->_user['id'])));
 
 		// Percorre lista de AROs relacionadas ao usuário
-		foreach($aroTree as $node)
-		{
+		foreach($aroTree as $node) {
 			// Recupera os ACOs para cada ARO
 			$aro = $this->Acl->Aro->find('first', array(
 					'conditions' => array(
-					'Aro.id' => $node['Aro']['id']
-				),
+						'Aro.id' => $node['Aro']['id']
+					),
 					'contain' => array('Aco')
 				)
 			);
 
 			// Para cada ACO, computa as permissões definidas
-			foreach($aro['Aco'] as $aco)
-			{
+			foreach($aro['Aco'] as $aco) {
 				$permissions[$aco['id']] = true;
 			}
 		}
@@ -320,50 +274,39 @@ class MenuBuilderComponent extends Component
 			)
 		);
 
-		foreach($acoTree as $key => $acoNode)
-		{
+		foreach($acoTree as $key => $acoNode) {
 			$aco = $acoNode['Aco'];
 
-			if(empty($aco['parent_id']))
-			{
+			if(empty($aco['parent_id'])) {
 				$tree[$aco['id']] = $aco;
-
 				$indexes[$aco['id']] = &$tree[$aco['id']];
 			}
 			// verifica se o nó pai já foi preenchido
-			else if(!empty($indexes[$aco['parent_id']]))
-			{
+			else if(!empty($indexes[$aco['parent_id']])) {
 				$indexes[$aco['parent_id']]['childs'][$key] = $aco;
-
 				$indexes[$aco['id']] = &$indexes[$aco['parent_id']]['childs'][$key];
 			}
 
 			// identifica permissão para o nó encontrado
 			$node = $aco;
 
-			while(true)
-			{
+			while(true) {
 				// caso não possua permissão atrelada, mas seja um nó filho
-				if(!isset($permissions[$node['id']]) && !empty($node['parent_id']))
-				{
+				if(!isset($permissions[$node['id']]) && !empty($node['parent_id'])) {
+
 					// caso haja registro do nó pai
-					if(isset($indexes[$node['parent_id']]))
-					{
+					if(isset($indexes[$node['parent_id']])) {
 						// atualiza o nó corrente para o nó pai, para então verificar suas permissões
 						$node = $indexes[$node['parent_id']];
-
 						continue;
 					}
 				}
 				break;
 			}
 
-			if(isset($permissions[$node['id']]))
-			{
+			if(isset($permissions[$node['id']])) {
 				$permissions[$aco['id']] = $permissions[$node['id']];
-			}
-			else
-			{
+			} else {
 				$permissions[$aco['id']] = false;
 			}
 
@@ -371,21 +314,16 @@ class MenuBuilderComponent extends Component
 			$indexes[$aco['id']]['authorized'] = $permissions[$aco['id']];
 		}
 
-		foreach($indexes as $id => $node)
-		{
-			// se autorização for true, repassa para seus 'ancestrais'
-			if($permissions[$id])
-			{
+		// Percorre o caminho inverso, levando as permissões dos filhos para os pais
+		foreach($indexes as $id => $node) {
+			if($permissions[$id]) {
 				$aux = $node;
 
-				while(true)
-				{
+				while(true) {
 					$indexes[$aux['id']]['authorized'] = true;
 
-					if(!empty($aux['parent_id']))
-					{
+					if(!empty($aux['parent_id'])) {
 						$aux = $indexes[$aux['parent_id']];
-
 						continue;
 					}
 

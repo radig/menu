@@ -1,7 +1,7 @@
 <?php
 /**
  * Modelo que representa as entradas do menu persistida em BD.
- * 
+ *
  * @package		radig.Menu.Model
  * @copyright		Radig Soluções em TI
  * @author			Radig Dev Team - suporte@radig.com.br

@@ -247,12 +247,9 @@ class MenuBuilderComponent extends Component
 		$tree = array();
 		$permissions = array();
 
-		// Recupera AROs relacionados ao usuário, na ordem Geral -> Específico
 		$aroTree = array_reverse($this->Acl->Aro->node(array('model' => 'User', 'foreign_key' => $this->_user['id'])));
 
-		// Percorre lista de AROs relacionadas ao usuário
 		foreach($aroTree as $node) {
-			// Recupera os ACOs para cada ARO
 			$aro = $this->Acl->Aro->find('first', array(
 					'conditions' => array(
 						'Aro.id' => $node['Aro']['id']
@@ -261,13 +258,11 @@ class MenuBuilderComponent extends Component
 				)
 			);
 
-			// Para cada ACO, computa as permissões definidas
 			foreach($aro['Aco'] as $aco) {
 				$permissions[$aco['id']] = true;
 			}
 		}
 
-		// inicia construção da árvore de ACOs
 		$acoTree = $this->Acl->Aco->find('all', array(
 				'contain' => array(),
 				'order' => 'Aco.lft'
@@ -280,23 +275,17 @@ class MenuBuilderComponent extends Component
 			if(empty($aco['parent_id'])) {
 				$tree[$aco['id']] = $aco;
 				$indexes[$aco['id']] = &$tree[$aco['id']];
-			}
-			// verifica se o nó pai já foi preenchido
-			else if(!empty($indexes[$aco['parent_id']])) {
+
+			} else if(!empty($indexes[$aco['parent_id']])) {
 				$indexes[$aco['parent_id']]['childs'][$key] = $aco;
 				$indexes[$aco['id']] = &$indexes[$aco['parent_id']]['childs'][$key];
 			}
 
-			// identifica permissão para o nó encontrado
 			$node = $aco;
-
 			while(true) {
-				// caso não possua permissão atrelada, mas seja um nó filho
 				if(!isset($permissions[$node['id']]) && !empty($node['parent_id'])) {
 
-					// caso haja registro do nó pai
 					if(isset($indexes[$node['parent_id']])) {
-						// atualiza o nó corrente para o nó pai, para então verificar suas permissões
 						$node = $indexes[$node['parent_id']];
 						continue;
 					}
@@ -310,11 +299,9 @@ class MenuBuilderComponent extends Component
 				$permissions[$aco['id']] = false;
 			}
 
-			// associa permissão ao nó
 			$indexes[$aco['id']]['authorized'] = $permissions[$aco['id']];
 		}
 
-		// Percorre o caminho inverso, levando as permissões dos filhos para os pais
 		foreach($indexes as $id => $node) {
 			if($permissions[$id]) {
 				$aux = $node;

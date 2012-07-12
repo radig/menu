@@ -80,9 +80,13 @@ class MenuHelper extends AppHelper
 			return $menu;
 		}
 
+		$menu = '<ul>';
+
 		foreach($items as $item) {
 			$menu .= $this->deepVisitor($item);
 		}
+
+		$menu .= '</ul>';
 
 		return $menu;
 	}
@@ -159,9 +163,6 @@ class MenuHelper extends AppHelper
 		$out .= '">';
 
 		$url = $this->buildUrl($nodes);
-		if(empty($url)) {
-			$url = '#';
-		}
 
 		$attrs = array('title' => __($nodes['title']));
 		if(isset($nodes['attrs'])) {
@@ -246,7 +247,7 @@ class MenuHelper extends AppHelper
 	 * um array apenas com itens relevantes para a URL
 	 *
 	 * @param  array $fragments Um array com fragmentos da URL junto a outras opções
-	 * @return array $url URL válida para CakePHP
+	 * @return array|string $url URL válida para CakePHP
 	 */
 	protected function buildUrl($fragments)
 	{
@@ -272,6 +273,10 @@ class MenuHelper extends AppHelper
 			}
 
 			unset($fragments['params']);
+		}
+
+		if(empty($url['plugin']) && empty($url['controller']) && empty($url['action'])) {
+			$url = '#';
 		}
 
 		return $url;

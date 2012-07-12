@@ -16,6 +16,7 @@ class MenuHelper extends AppHelper
 	public $helpers = array('Html');
 
 	public $settings = array(
+		'class' => 'menu',
 		'firstLevelClass' => 'dropdown',
 		'activeItemClass' => 'active',
 	);
@@ -28,7 +29,7 @@ class MenuHelper extends AppHelper
 	 * @return void
 	 */
 	public function settings($newSettings) {
-		$this->settings += $newSettings;
+		$this->settings = array_merge($this->settings, $newSettings);
 	}
 
 	/**
@@ -80,7 +81,7 @@ class MenuHelper extends AppHelper
 			return $menu;
 		}
 
-		$menu = '<ul>';
+		$menu = '<ul class="' . $this->settings['class'] . '">';
 
 		foreach($items as $item) {
 			$menu .= $this->deepVisitor($item);

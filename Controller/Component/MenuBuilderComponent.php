@@ -55,9 +55,9 @@ class MenuBuilderComponent extends Component
 	 * @param Controller $controller
 	 * @param array $settings
 	 */
-	public function initialize(&$controller)
+	public function initialize(Controller $controller)
 	{
-		$this->Controller =& $controller;
+		$this->Controller = $controller;
 
 		$this->_user = $this->Auth->user();
 	}
@@ -67,9 +67,9 @@ class MenuBuilderComponent extends Component
 	 *
 	 * @param Controller $controller
 	 */
-	public function startup(&$controller)
+	public function startup(Controller $controller)
 	{
-		$this->Controller =& $controller;
+		$this->Controller = $controller;
 	}
 
 	/**

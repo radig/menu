@@ -157,26 +157,27 @@ class MenuHelper extends AppHelper
 			$out .= $this->settings['firstLevelClass'];
 		}
 
-		if($this->isHere($nodes)) {
+		$url = $this->buildUrl($nodes);
+
+		if($this->isHere($nodes, $url)) {
 			$out .= ' ' . $this->settings['activeItemClass'];
 		}
 
 		$out .= '">';
-
-		$url = $this->buildUrl($nodes);
 
 		$attrs = array('title' => __($nodes['title']));
 		if(isset($nodes['attrs'])) {
 			$attrs += $nodes['attrs'];
 		}
 
+		$title = $attrs['title'];
 		if(isset($nodes['icon']) && !empty($nodes['icon'])) {
 			$attrs['escape'] = false;
-			$attrs['title'] = $this->Html->tag('i', '', array('class' => $nodes['icon'])) . $attrs['title'];
+			$title = $this->Html->tag('i', '', array('class' => $nodes['icon'])) . $attrs['title'];
 		}
 
 		if(!isset($nodes['childs']) && empty($nodes['childs'])) {
-			$out .= $this->Html->link($attrs['title'], $url, $attrs);
+			$out .= $this->Html->link($title, $url, $attrs);
 
 		} else {
 			$out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">'. $attrs['title'] .'<b class="caret"></b></a>';
@@ -202,11 +203,13 @@ class MenuHelper extends AppHelper
 	 *
 	 * @return boolean Item está ativo
 	 */
-	protected function isHere($nodes)
+	protected function isHere($nodes, $current = null)
 	{
-		$url = $this->buildUrl($nodes);
+		if($current === null) {
+			$current = $this->buildUrl($nodes);
+		}
 
-		if($this->request->here == $this->url($url)) {
+		if($this->request->here == $this->url($current)) {
 			return true;
 		}
 

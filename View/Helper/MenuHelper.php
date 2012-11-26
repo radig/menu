@@ -209,7 +209,13 @@ class MenuHelper extends AppHelper
 			$current = $this->buildUrl($nodes);
 		}
 
-		if($this->request->here == $this->url($current)) {
+		$currentUrl = $this->url($current);
+
+		if($this->request->here == $currentUrl) {
+			return true;
+		}
+
+		if(CakeSession::check('Menu.currentRoot') && CakeSession::read('Menu.currentRoot') == $currentUrl) {
 			return true;
 		}
 

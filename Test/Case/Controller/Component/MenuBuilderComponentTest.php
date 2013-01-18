@@ -73,7 +73,7 @@ class MenuBuilderComponentTest extends CakeTestCase {
 					)
 				)
 			)
-		);
+		));
 	}
 
 /**
@@ -94,5 +94,4 @@ class MenuBuilderComponentTest extends CakeTestCase {
  */
 	public function testBuild() {
 	}
-
 }

@@ -31,7 +31,7 @@ class MenuBuilderComponent extends Component
 	private $_defaultSettings = array(
 		'rootNode' => 'controllers',
 		'cacheConfig' => 'default',
-		'aroNamePrefix' => '_'
+		'aro' => null
 	);
 
 	private $_acoTree = array();
@@ -46,7 +46,7 @@ class MenuBuilderComponent extends Component
 	{
 		parent::__construct($collection, $settings);
 
-		$this->settings = Set::merge($this->_defaultSettings, $settings);
+		$this->settings = Hash::merge($this->_defaultSettings, $settings);
 	}
 
 	/**
@@ -80,18 +80,18 @@ class MenuBuilderComponent extends Component
 	public function build($items, $key = 'Main', $useCache = true)
 	{
 		$cached = null;
-		if($useCache) {
+		if ($useCache) {
 			$cached = Cache::read("Menu.{$this->_user['id']}.{$key}", $this->settings['cacheConfig']);
 		}
 
-		if($useCache && !empty($cached)) {
+		if ($useCache && !empty($cached)) {
 			return $cached;
 		}
 
 		$this->_setupAcoTree($useCache);
 		$menu = $this->_build($items);
 
-		if($useCache) {
+		if ($useCache) {
 			Cache::write("Menu.{$this->_user['id']}.{$key}", $menu, $this->settings['cacheConfig']);
 		}
 
@@ -106,11 +106,11 @@ class MenuBuilderComponent extends Component
 	*/
 	protected function _setupAcoTree($useCache = true)
 	{
-		if(empty($this->_acoTree) && $useCache) {
+		if (empty($this->_acoTree) && $useCache) {
 			// primeiramente verifica por cache contendo a arvore, se existir, a utiliza
 			$cached = Cache::read('AcoTree.' . $this->_user['id'], $this->settings['cacheConfig']);
 
-			if($cached) {
+			if ($cached) {
 				$this->_acoTree = $cached;
 				return $cached;
 			}
@@ -118,7 +118,7 @@ class MenuBuilderComponent extends Component
 
 		$this->_acoTree = $this->__buildAcoTree();
 
-		if($useCache) {
+		if ($useCache) {
 			Cache::write('AcoTree.' . $this->_user['id'], $this->_acoTree, $this->settings['cacheConfig']);
 		}
 
@@ -136,8 +136,8 @@ class MenuBuilderComponent extends Component
 		$menu = $this->_deepCheck($items);
 
 		// varre o menu em busca de pais sem filho e sem ação (botão estático)
-		foreach($menu as $key => $button) {
-			if(!isset($button['childs']) && empty($button['controller']) && empty($button['action'])) {
+		foreach ($menu as $key => $button) {
+			if (!isset($button['childs']) && empty($button['controller']) && empty($button['action'])) {
 				unset($menu[$key]);
 			}
 		}
@@ -154,16 +154,16 @@ class MenuBuilderComponent extends Component
 	 */
 	protected function _deepCheck(&$items)
 	{
-		if(!is_array($items)) {
+		if (!is_array($items)) {
 			return array();
 		}
 
-		foreach($items as $k => $item) {
-			if($this->_checkMenuNode($item)) {
-				if(isset($item['childs']) && !empty($item['childs'])) {
+		foreach ($items as $k => $item) {
+			if ($this->_checkMenuNode($item)) {
+				if (isset($item['childs']) && !empty($item['childs'])) {
 					$item['childs'] = $this->_deepCheck($item['childs']);
 
-					if(empty($item['childs'])) {
+					if (empty($item['childs'])) {
 						unset($items[$k]);
 					}
 				}
@@ -188,24 +188,24 @@ class MenuBuilderComponent extends Component
 	{
 		$aco = 'controllers/';
 
-		if(!empty($menu['plugin'])) {
+		if (!empty($menu['plugin'])) {
 			$aco .= Inflector::camelize($menu['plugin']) . '/';
 		}
 
-		if(!empty($menu['controller'])) {
+		if (!empty($menu['controller'])) {
 			$aco .= Inflector::camelize($menu['controller']) . '/';
 		}
 
-		if(!empty($menu['action'])) {
+		if (!empty($menu['action'])) {
 			$aco .= $menu['action'];
 		}
 
 		// Caso o item de menu não tenha url, ele é autorizado por padrão
-		if($aco === 'controllers/') {
+		if ($aco === 'controllers/') {
 			return true;
 		}
 
-		$aro = $this->settings['aroNamePrefix'] . $this->_user['username'];
+		$aro = !empty($this->settings['aro']) ? $this->settings['aro'] : $this->Auth->user('username');
 
 		return $this->Acl->check($aro, $aco);
 	}
@@ -218,14 +218,14 @@ class MenuBuilderComponent extends Component
 	 */
 	protected function _deepSearch($nodes, $term)
 	{
-		if($nodes['alias'] == $term) {
+		if ($nodes['alias'] == $term) {
 			return (bool)$nodes['authorized'];
 		}
 
-		if(isset($nodes['childs'])) {
+		if (isset($nodes['childs'])) {
 			$authorized = true;
 
-			foreach($nodes['childs'] as $child) {
+			foreach ($nodes['childs'] as $child) {
 				$authorized = $authorized && $this->_deepSearch($child, $term);
 			}
 
@@ -249,7 +249,7 @@ class MenuBuilderComponent extends Component
 
 		$aroTree = array_reverse($this->Acl->Aro->node(array('model' => 'User', 'foreign_key' => $this->_user['id'])));
 
-		foreach($aroTree as $node) {
+		foreach ($aroTree as $node) {
 			$aro = $this->Acl->Aro->find('first', array(
 					'conditions' => array(
 						'Aro.id' => $node['Aro']['id']
@@ -258,7 +258,7 @@ class MenuBuilderComponent extends Component
 				)
 			);
 
-			foreach($aro['Aco'] as $aco) {
+			foreach ($aro['Aco'] as $aco) {
 				$permissions[$aco['id']] = true;
 			}
 		}
@@ -269,23 +269,23 @@ class MenuBuilderComponent extends Component
 			)
 		);
 
-		foreach($acoTree as $key => $acoNode) {
+		foreach ($acoTree as $key => $acoNode) {
 			$aco = $acoNode['Aco'];
 
-			if(empty($aco['parent_id'])) {
+			if (empty($aco['parent_id'])) {
 				$tree[$aco['id']] = $aco;
 				$indexes[$aco['id']] = &$tree[$aco['id']];
 
-			} else if(!empty($indexes[$aco['parent_id']])) {
+			} else if (!empty($indexes[$aco['parent_id']])) {
 				$indexes[$aco['parent_id']]['childs'][$key] = $aco;
 				$indexes[$aco['id']] = &$indexes[$aco['parent_id']]['childs'][$key];
 			}
 
 			$node = $aco;
-			while(true) {
-				if(!isset($permissions[$node['id']]) && !empty($node['parent_id'])) {
+			while (true) {
+				if (!isset($permissions[$node['id']]) && !empty($node['parent_id'])) {
 
-					if(isset($indexes[$node['parent_id']])) {
+					if (isset($indexes[$node['parent_id']])) {
 						$node = $indexes[$node['parent_id']];
 						continue;
 					}
@@ -293,7 +293,7 @@ class MenuBuilderComponent extends Component
 				break;
 			}
 
-			if(isset($permissions[$node['id']])) {
+			if (isset($permissions[$node['id']])) {
 				$permissions[$aco['id']] = $permissions[$node['id']];
 			} else {
 				$permissions[$aco['id']] = false;
@@ -302,14 +302,14 @@ class MenuBuilderComponent extends Component
 			$indexes[$aco['id']]['authorized'] = $permissions[$aco['id']];
 		}
 
-		foreach($indexes as $id => $node) {
-			if($permissions[$id]) {
+		foreach ($indexes as $id => $node) {
+			if ($permissions[$id]) {
 				$aux = $node;
 
-				while(true) {
+				while (true) {
 					$indexes[$aux['id']]['authorized'] = true;
 
-					if(!empty($aux['parent_id'])) {
+					if (!empty($aux['parent_id'])) {
 						$aux = $indexes[$aux['parent_id']];
 						continue;
 					}

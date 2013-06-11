@@ -178,7 +178,7 @@ class MenuHelper extends AppHelper
         $title = $attrs['title'];
         if (isset($nodes['icon']) && !empty($nodes['icon'])) {
             $attrs['escape'] = false;
-            $title = $this->Html->tag('i', '', array('class' => $nodes['icon'])) . $attrs['title'];
+            $title = $this->Html->tag('i', '', array('class' => $nodes['icon'])) . ' ' . $attrs['title'];
         }
 
         if (!isset($nodes['childs']) || empty($nodes['childs'])) {
@@ -188,7 +188,7 @@ class MenuHelper extends AppHelper
 
         $aFmt = '<a href="#" class="%s">%s %s</a>';
         $caret = $this->settings['useCaret'] ? '<b class="caret"></b>' : '';
-        $itemContent = sprintf($aFmt, $this->settings['styles']['submenuLink'], $attrs['title'], $caret);
+        $itemContent = sprintf($aFmt, $this->settings['styles']['submenuLink'], $title, $caret);
 
         $subFmt = '<ul class="%s">%s</ul>';
         $subContent = '';

@@ -21,7 +21,7 @@ class MenuHelper extends AppHelper
             'container'        => 'menu',            // classe do elemento pai 'ul'
             'itemRoot'         => 'dropdown',        // classe do elemento 'li' que contém submenus (ul), aplicado apenas ao primeiro nível
             'itemWithChild'    => '',                // classe do elemento 'li' que contém submenus (ul)
-            'itemActive'       => 'active',          // classe aplicada ao 'li' que contém o link ativo
+            'itemActiveClass'  => 'active',          // classe aplicada ao 'li' que contém o link ativo
             'submenuLink'      => 'dropdown-toggle', // classe do elemento 'a' quando o mesmo contém submenus (ul)
             'submenuContainer' => 'dropdown-menu',   // classe do elemento 'ul' de submenus
         )
@@ -157,17 +157,21 @@ class MenuHelper extends AppHelper
      */
     protected function deepVisitor($nodes, $isRoot = true)
     {
-        $itemFmt = '<li class="%s">%s</li>';
+        $itemAttrs = array('class' => '');
+        if (isset($nodes['itemAttrs'])) {
+            $itemAttrs = $nodes['itemAttrs'] + $itemAttrs;
+            unset($nodes['itemsAttrs']);
+        }
+
         $url = $this->buildUrl($nodes);
 
-        $itemClass = '';
         if (isset($nodes['childs']) && !empty($nodes['childs'])) {
-            $itemClass = $isRoot && !empty($this->settings['styles']['itemRoot']) ? $this->settings['styles']['itemRoot'] : '';
-            $itemClass .= !empty($this->settings['styles']['itemWithChild']) ? ' ' . $this->settings['styles']['itemWithChild'] : '';
+            $itemAttrs['class'] .= $isRoot && !empty($this->settings['styles']['itemRoot']) ? ' ' . $this->settings['styles']['itemRoot'] : '';
+            $itemAttrs['class'] .= !empty($this->settings['styles']['itemWithChild']) ? ' ' . $this->settings['styles']['itemWithChild'] : '';
         }
 
         if (!empty($this->settings['styles']['itemActiveClass']) && $this->isHere($nodes, $url)) {
-            $itemClass .= ' ' . $this->settings['styles']['itemActiveClass'];
+            $itemAttrs['class'] .= ' ' . $this->settings['styles']['itemActiveClass'];
         }
 
         $attrs = array('title' => __($nodes['title']));
@@ -182,8 +186,8 @@ class MenuHelper extends AppHelper
         }
 
         if (!isset($nodes['childs']) || empty($nodes['childs'])) {
-            $itemContent = $this->Html->link($title, $url, $attrs);
-            return sprintf($itemFmt, $itemClass, $itemContent);
+            $itemContent = ($url === false) ? $title : $this->Html->link($title, $url, $attrs);
+            return $this->Html->tag('li', $itemContent, $itemAttrs);
         }
 
         $aFmt = '<a href="#" class="%s">%s %s</a>';
@@ -192,13 +196,13 @@ class MenuHelper extends AppHelper
 
         $subFmt = '<ul class="%s">%s</ul>';
         $subContent = '';
-        foreach($nodes['childs'] as $child) {
+        foreach ($nodes['childs'] as $child) {
             $subContent .= $this->deepVisitor($child, false);
         }
 
         $itemContent .= sprintf($subFmt, $this->settings['styles']['submenuContainer'], $subContent);
 
-        return sprintf($itemFmt, $itemClass, $itemContent);
+        return sprintf($itemFmt, $itemAttrs['class'], $itemContent);
     }
 
     /**
@@ -211,22 +215,22 @@ class MenuHelper extends AppHelper
      */
     protected function isHere($nodes, $current = null)
     {
-        if($current === null) {
+        if ($current === null) {
             $current = $this->buildUrl($nodes);
         }
 
         $currentUrl = $this->url($current);
 
-        if($this->request->here == $currentUrl) {
+        if ($this->request->here == $currentUrl) {
             return true;
         }
 
-        if(CakeSession::check('Menu.currentRoot') && CakeSession::read('Menu.currentRoot') == $currentUrl) {
+        if (Configure::check('Menu.currentRoot') && Configure::read('Menu.currentRoot') == $currentUrl) {
             return true;
         }
 
-        if(isset($nodes['childs']) && !empty($nodes['childs'])) {
-            foreach($nodes['childs'] as $child) {
+        if (isset($nodes['childs']) && !empty($nodes['childs'])) {
+            foreach ($nodes['childs'] as $child) {
                 return $this->isHere($child);
             }
         }
@@ -243,15 +247,15 @@ class MenuHelper extends AppHelper
     {
         $here = '';
 
-        if(!empty($this->request->plugin)) {
+        if (!empty($this->request->plugin)) {
             $here .= strtolower($this->request->plugin) . '/';
         }
 
-        if(!empty($this->request->controller)) {
+        if (!empty($this->request->controller)) {
             $here .= strtolower($this->request->controller) . '/';
         }
 
-        if(!empty($this->request->action)) {
+        if (!empty($this->request->action)) {
             $here .= $this->request->action;
         }
 
@@ -269,6 +273,14 @@ class MenuHelper extends AppHelper
     {
         $url = array();
 
+        if (isset($fragments['url'])) {
+            $fragments = $fragments['url'];
+        }
+
+        if (is_string($fragments) || $fragments === false) {
+            return $fragments;
+        }
+
         $url['plugin']     = $this->getFragment($fragments, 'plugin');
         unset($fragments['plugin']);
 
@@ -278,9 +290,9 @@ class MenuHelper extends AppHelper
         $url['action']     = $this->getFragment($fragments, 'action');
         unset($fragments['action']);
 
-        if(isset($fragments['params'])) {
-            foreach($fragments['params'] as $key => $param) {
-                if(is_numeric($key)) {
+        if (isset($fragments['params'])) {
+            foreach ($fragments['params'] as $key => $param) {
+                if (is_numeric($key)) {
                     array_push($url, $param);
                     continue;
                 }
@@ -291,7 +303,7 @@ class MenuHelper extends AppHelper
             unset($fragments['params']);
         }
 
-        if(empty($url['plugin']) && empty($url['controller']) && empty($url['action'])) {
+        if (empty($url['plugin']) && empty($url['controller']) && empty($url['action'])) {
             $url = '#';
         }
 

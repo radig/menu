@@ -202,7 +202,7 @@ class MenuHelper extends AppHelper
 
         $itemContent .= sprintf($subFmt, $this->settings['styles']['submenuContainer'], $subContent);
 
-        return sprintf($itemFmt, $itemAttrs['class'], $itemContent);
+        return $this->Html->tag('li', $itemContent, $itemAttrs);
     }
 
     /**

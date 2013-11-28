@@ -12,29 +12,29 @@ class MenuTest extends CakeTestCase {
  *
  * @var array
  */
-	public $fixtures = array(
-		'plugin.menu.menu'
-	);
+    public $fixtures = array(
+        'plugin.menu.menu'
+    );
 
 /**
  * setUp method
  *
  * @return void
  */
-	public function setUp() {
-		parent::setUp();
-		$this->Menu = ClassRegistry::init('Menu.Menu');
-	}
+    public function setUp() {
+        parent::setUp();
+        $this->Menu = ClassRegistry::init('Menu.Menu');
+    }
 
 /**
  * tearDown method
  *
  * @return void
  */
-	public function tearDown() {
-		unset($this->Menu);
+    public function tearDown() {
+        unset($this->Menu);
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
 }

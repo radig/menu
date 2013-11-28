@@ -12,61 +12,61 @@ class MenuHelperTest extends CakeTestCase {
  *
  * @return void
  */
-	public function setUp() {
-		parent::setUp();
-		$View = new View();
-		$this->Menu = new MenuHelper($View);
-	}
+    public function setUp() {
+        parent::setUp();
+        $View = new View();
+        $this->Menu = new MenuHelper($View);
+    }
 
 /**
  * tearDown method
  *
  * @return void
  */
-	public function tearDown() {
-		unset($this->Menu);
+    public function tearDown() {
+        unset($this->Menu);
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
 /**
  * testSettings method
  *
  * @return void
  */
-	public function testSettings() {
-	}
+    public function testSettings() {
+    }
 
 /**
  * testButton method
  *
  * @return void
  */
-	public function testButton() {
-	}
+    public function testButton() {
+    }
 
 /**
  * testRender method
  *
  * @return void
  */
-	public function testRender() {
-	}
+    public function testRender() {
+    }
 
 /**
  * testContextual method
  *
  * @return void
  */
-	public function testContextual() {
-	}
+    public function testContextual() {
+    }
 
 /**
  * testGetRelateds method
  *
  * @return void
  */
-	public function testGetRelateds() {
-	}
+    public function testGetRelateds() {
+    }
 
 }

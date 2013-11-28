@@ -1,6 +1,4 @@
 $(document).ready(function () {
-	//$('#mainMenu').ptMenu();
-
 	$('.menu-active-item').parent().parent().slideDown('slow');
 	
 	$('a.jsPopupMenuLink').click(function (e) {

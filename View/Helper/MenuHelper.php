@@ -7,7 +7,6 @@ App::uses('AppHelper', 'View/Helper');
  * @package     radig.Menu.View.Helper
  * @copyright   Radig Soluções em TI
  * @author      Radig Dev Team - suporte@radig.com.br
- * @version     3.1
  * @license     Vide arquivo LICENCA incluído no pacote
  * @link        http://radig.com.br
  */

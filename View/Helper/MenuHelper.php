@@ -28,6 +28,14 @@ class MenuHelper extends AppHelper
     );
 
     /**
+     * Guarda informação de que um item do menu
+     * já foi marcado como ativo.
+     * 
+     * @var boolean
+     */
+    protected $_definedActive = false;
+
+    /**
      * Atualiza configurações do helper
      *
      * @param  array $newSettings
@@ -81,8 +89,8 @@ class MenuHelper extends AppHelper
      */
     public function render($items)
     {
+        $this->_definedActive = false;
         $menu = '';
-
         if (empty($items)) {
             return $menu;
         }
@@ -108,6 +116,7 @@ class MenuHelper extends AppHelper
      */
     public function contextual($items, $relations)
     {
+        $this->_definedActive = false;
         $menu = '';
         $arrayItem = $this->getRelated($relations);
 
@@ -170,7 +179,8 @@ class MenuHelper extends AppHelper
             $itemAttrs['class'] .= !empty($this->settings['styles']['itemWithChild']) ? ' ' . $this->settings['styles']['itemWithChild'] : '';
         }
 
-        if (!empty($this->settings['styles']['itemActiveClass']) && $this->isHere($nodes, $url)) {
+        if (!empty($this->settings['styles']['itemActiveClass']) && !$this->_definedActive && $this->isHere($nodes, $url)) {
+            $this->_definedActive = true;
             $itemAttrs['class'] .= ' ' . $this->settings['styles']['itemActiveClass'];
         }
 
@@ -217,6 +227,10 @@ class MenuHelper extends AppHelper
     {
         if ($current === null) {
             $current = $this->buildUrl($nodes);
+        }
+
+        if (empty($current) || $current === '#') {
+            return false;
         }
 
         $currentUrl = $this->url($current);
@@ -281,14 +295,9 @@ class MenuHelper extends AppHelper
             return $fragments;
         }
 
-        $url['plugin']     = $this->getFragment($fragments, 'plugin');
-        unset($fragments['plugin']);
-
-        $url['controller'] = $this->getFragment($fragments, 'controller');
-        unset($fragments['controller']);
-
-        $url['action']     = $this->getFragment($fragments, 'action');
-        unset($fragments['action']);
+        $url['plugin']     = $this->popFragment($fragments, 'plugin');
+        $url['controller'] = $this->popFragment($fragments, 'controller');
+        $url['action']     = $this->popFragment($fragments, 'action');
 
         if (isset($fragments['params'])) {
             foreach ($fragments['params'] as $key => $param) {
@@ -311,7 +320,7 @@ class MenuHelper extends AppHelper
     }
 
     /**
-     * Método auxiliar para recuperar uma posição do array $arr
+     * Método auxiliar para recupera e remove uma posição do array $arr
      * se ela estiver setada e não estiver vazia. Devolve $default
      * caso contrário.
      *
@@ -320,8 +329,14 @@ class MenuHelper extends AppHelper
      * @param  boolean $default
      * @return mixed
      */
-    protected function getFragment($arr, $name, $default = false)
+    protected function popFragment(&$arr, $name, $default = false)
     {
-        return (isset($arr[$name]) && !empty($arr[$name])) ? $arr[$name] : $default;
+        if (isset($arr[$name]) && !empty($arr[$name])) {
+            $value = $arr[$name];
+            unset($arr[$name]);
+            return $value;
+        }
+
+        return $default;
     }
 }
